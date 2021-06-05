@@ -6,7 +6,11 @@ const initialState = jotsAdaptor.getInitialState({
   error: null
 })
 
-export const fetchJots
+export const fetchJots = createAsyncThunk('jots/fetchJots', async () => {
+  const response = await fetch('http://127.0.0.1:3001/jots')
+  return response.json()
+})
+
 const jotsSlice = createSlice({
   name: 'jots',
   initialState,
