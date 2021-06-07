@@ -19,7 +19,6 @@ export const signupUser = (credentials) => {
     return fetch('http://127.0.0.1:3001/signup',{
       method: 'POST',
       headers: {
-        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(credentials)
@@ -29,19 +28,21 @@ export const signupUser = (credentials) => {
           setToken(resp.headers.get('Authorization'))
           return resp.json()
         } else {
-          throw Error(resp.json())
+          throw Error(resp)
         }
       })
       .then((json) => {
         dispatch({ type: 'users/createUser', payload: json.data })
       })
       .catch((error) => {
-        dispatch({ type: 'users/createUserError', payload: error.status.message })
+        dispatch({ type: 'users/createUserError', payload: error.message })
       })
   }
 }
 
 const fetchCurrentUser = createAsyncThunk('users/fetchCurrentUser')
+
+export const selectLoggedIn = state => state.loggedIn
 
 const initialState = {
   status: 'idle',
