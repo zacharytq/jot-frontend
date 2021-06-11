@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { signupUser } from '../store/usersSlice';
+import { loginUser } from '../store/usersSlice';
 import { Redirect } from 'react-router-dom';
 
-class Signup extends Component {
+class Login extends Component {
   state = {
     email: "",
     password: "",
@@ -26,7 +26,7 @@ class Signup extends Component {
       try {
         this.setState({ requestStatus: "working" })
         const { email, password } = this.state
-        this.props.dispatchSignupUser({ user: { email, password }})
+        this.props.dispatchLoginUser({ user: { email, password }})
       } catch (err) {
         console.error('failed to save user', err)
       } finally {
@@ -54,7 +54,7 @@ class Signup extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchSignupUser: (credentials) => dispatch(signupUser(credentials))
+    dispatchLoginUser: (credentials) => dispatch(loginUser(credentials))
   }
 }
 
@@ -65,4 +65,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Signup);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

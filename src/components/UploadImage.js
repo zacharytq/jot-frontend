@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { selectLoggedIn } from '../store/usersSlice';
+import { useHistory } from 'react-router-dom';
 
 import { postNewImage } from '../store/imagesSlice';
 
 export function UploadImage() {
 
   const dispatch = useDispatch()
+  const history = useHistory();
   const [selectedImage, setSelectedimage] = useState();
   const [addRequestStatus, setAddRequestStatus] = useState('idle');
-  const regex = /([a-zA-Z0-9\s_\\.\-:])+(.png|.jpg|.gif)$/;
-
+  const loggedIn = useSelector(selectLoggedIn);
 
   const canSave = addRequestStatus === 'idle'; 
 
@@ -29,9 +31,12 @@ export function UploadImage() {
 
       try {
         setAddRequestStatus('pending')
-        const resultAction = await dispatch(postNewImage(formData))
-        unwrapResult(resultAction);
-        console.log(resultAction)
+        dispatch(postNewImage(formData))
+          .then(unwrapResult)
+          .then((result) => {
+            history.push(`/images/${result.id}`)
+          })
+        
       } catch (err) {
         console.error('Failed to upload image: ', err)
       } finally {
@@ -47,6 +52,7 @@ export function UploadImage() {
           <input type='file' onChange={handleImageSelect} />
           <button type='submit'>Upload</button>
         </form>
+        <p>{loggedIn ? 'works' : 'doesnt work'}</p>
       </div>
     )
 }

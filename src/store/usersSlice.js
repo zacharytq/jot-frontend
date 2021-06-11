@@ -14,6 +14,32 @@ export const getToken = () => {
   }
 }
 
+export const loginUser = (credentials) => {
+  return async (dispatch) => {
+    return fetch('http://127.0.0.1:3001/login',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(credentials)
+    })
+      .then((resp) => {
+        if (resp.ok) {
+          setToken(resp.headers.get('Authorization'))
+          return resp.json()
+        } else {
+          throw Error(resp)
+        }
+      })
+      .then((json) => {
+        dispatch({ type: 'users/loginUser', payload: json.data })
+      })
+      .catch((error) => {
+        dispatch({ type: 'users/loginUserError', payload: error.message })
+      })
+  }
+}
+
 export const signupUser = (credentials) => {
   return async (dispatch) => {
     return fetch('http://127.0.0.1:3001/signup',{
@@ -40,9 +66,32 @@ export const signupUser = (credentials) => {
   }
 }
 
+export const logoutUser = () => {
+  return async (dispatch) => {
+    return fetch('http://127.0.0.1:3001/logout', {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: getToken()
+      }
+    })
+      .then((resp) => {
+        if (resp.ok) {
+          return dispatch({type: 'users/logoutUser'})
+        } else {
+          return resp.json().then((errors) => {
+            dispatch({type: 'users/logout'})
+            return Promise.reject(errors)
+          })
+        }
+      })
+  }
+}
+
 const fetchCurrentUser = createAsyncThunk('users/fetchCurrentUser')
 
-export const selectLoggedIn = state => state.loggedIn
+export const selectLoggedIn = state => state.users.loggedIn
 
 const initialState = {
   status: 'idle',
@@ -60,6 +109,19 @@ const usersSlice = createSlice({
       state.loggedIn = true
     },
     createUserError(state, action) {
+      state.loggedIn = false
+      state.error = action.payload
+    },
+    logoutUser(state) {
+      state.loggedIn = false
+      state.currentUser = {}
+    },
+    loginUser(state, action) {
+      state.loggedIn = true
+      state.currentUser = action.payload
+    },
+    loginUserError(state, action) {
+      state.loggedIn = false
       state.error = action.payload
     }
   },
