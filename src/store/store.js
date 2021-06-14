@@ -4,7 +4,7 @@ import imagesReducer from './imagesSlice';
 import jotsReducer from './jotsSlice';
 import usersReducer from './usersSlice';
 
-export default configureStore({
+export const store = configureStore({
   reducer: {
     images: imagesReducer,
     jots: jotsReducer,

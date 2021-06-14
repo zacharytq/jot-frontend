@@ -1,20 +1,21 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { fetchImageById, imageById } from '../store/imagesSlice';
 
 export const ImageCard = () => {
   const dispatch = useDispatch();
-  const { params } = useParams()
-  const selectedImage = useSelector((state) => state.images.find(i => i.id === params))
+  const { id } = useParams()
+  //const selectedImage = useSelector(state => imageById(state, id))
 
   useEffect(() => {
-    dispatch(fetchImagesById(params))
-  }, [])
+    dispatch(fetchImageById(id))
+    
+  }, [dispatch, id])
   
   return (
     <div>
-      //image at top
-      //render jots below
+      <p>is this working</p>
     </div>
   )
 }

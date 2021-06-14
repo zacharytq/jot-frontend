@@ -18,7 +18,7 @@ export const fetchImageById = createAsyncThunk(
   'images/fetchImageById',
   async imageId => {
     const response = await fetch(`http://127.0.0.1:3001/images/${imageId}`)
-    return (await response.json())
+    return response.json()
   }
 )
 
@@ -29,15 +29,17 @@ const imagesSlice = createSlice({
     addImage: (state, action) => {
       state.images.push(action.payload)
     },
-    fetchImageById: (state, action) => {
-      state.images.push(action.payload)
-    }
   },
   extraReducers: {
     [postNewImage.fulfilled]: (state, action) => imagesAdapter.addOne(state, action.payload)
     // [fetchImages.fulfilled]: imagesAdapter.addMany(state, action.payload.images),
-  }
+  },
+    [fetchImageById.fulfilled]: (state, action) => {
+      imagesAdapter.addOne(state, action.payload)
+    }
 });
+
+export const imageById = (state, imageId) => imagesAdapter.getSelectors().selectById(state, imageId)
 
 export const addImage = imagesSlice.actions;
 export default imagesSlice.reducer;
