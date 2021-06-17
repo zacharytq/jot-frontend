@@ -1,21 +1,36 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchImageById, imageById } from '../store/imagesSlice';
+import { fetchImageById, selectImageById } from '../store/imagesSlice';
 
 export const ImageCard = () => {
   const dispatch = useDispatch();
-  const { id } = useParams()
-  //const selectedImage = useSelector(state => imageById(state, id))
+  const { imageId } = useParams()
+  const selectedImage = useSelector(state => selectImageById(state, imageId))
+  const status = useSelector(state => state.images.status)
 
   useEffect(() => {
-    dispatch(fetchImageById(id))
-    
-  }, [dispatch, id])
-  
+      dispatch(fetchImageById(imageId))
+      
+  }, [dispatch, imageId])
+
+  let content
+
+  if (status === 'loading') {
+    content = <div>
+      <p>loading</p>
+      </div>
+  } else if (status === 'success') {
+    content = (
+      <>
+        <img src={selectedImage.imageUrl} alt={selectedImage.imageUrl} />
+      </>
+        
+    )
+  }
   return (
     <div>
-      <p>is this working</p>
+      {content}
     </div>
   )
 }

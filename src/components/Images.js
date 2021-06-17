@@ -9,8 +9,10 @@ export const Images = () => {
   return (
     <div>
       <Switch>
-        <Route exact path={path} />
-        <Route path={`${path}/:id`}>
+        <Route exact path={path}>
+          <h3>Images</h3>
+        </Route>
+        <Route path={`${path}/:imageId`}>
           <ImageCard />
         </Route>
       </Switch>

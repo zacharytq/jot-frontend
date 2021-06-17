@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
 
 const imagesAdapter = createEntityAdapter()
-const initialState = imagesAdapter.getInitialState()
+const initialState = imagesAdapter.getInitialState({
+  status: 'idle'
+})
 
 export const postNewImage = createAsyncThunk(
   'images/postNewImage',
@@ -14,13 +16,35 @@ export const postNewImage = createAsyncThunk(
   }
 )
 
-export const fetchImageById = createAsyncThunk(
-  'images/fetchImageById',
-  async imageId => {
-    const response = await fetch(`http://127.0.0.1:3001/images/${imageId}`)
-    return response.json()
+export const fetchImageById = (imageId) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: 'images/fetchImageByIdPending' })
+      let response = await fetch(`http://127.0.0.1:3001/images/${imageId}`)
+      if (response.ok) {
+        let respJson = await response.text()
+        let myObj = JSON.parse(respJson)
+        const payload = {
+          id: myObj.data.id,
+          imageUrl: myObj.data.links.image_url
+        }
+        dispatch({ type: 'images/fetchImageByIdSuccess', payload })
+        console.log(myObj.data)
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
-)
+}
+
+//export const fetchImageById = createAsyncThunk(
+//  'images/fetchImageById',
+//  async imageId => {
+//    const response = await fetch(`http://127.0.0.1:3001/images/${imageId}`)
+//    const processedResponse = await response.json()
+//    return processedResponse.data
+//  }
+//)
 
 const imagesSlice = createSlice({
   name: 'images',
@@ -29,17 +53,25 @@ const imagesSlice = createSlice({
     addImage: (state, action) => {
       state.images.push(action.payload)
     },
+    fetchImageByIdPending: (state) => {
+      state.status = 'loading'
+    },
+    fetchImageByIdSuccess: (state, action) => {
+      state.status = 'success'
+      imagesAdapter.upsertOne(state, action.payload)
+    }
+    //fetchImageById: (state, action) => {
+    //  imagesAdapter.upsertOne(state, action.payload)
+    //}
   },
   extraReducers: {
-    [postNewImage.fulfilled]: (state, action) => imagesAdapter.addOne(state, action.payload)
-    // [fetchImages.fulfilled]: imagesAdapter.addMany(state, action.payload.images),
-  },
-    [fetchImageById.fulfilled]: (state, action) => {
-      imagesAdapter.addOne(state, action.payload)
-    }
+    [postNewImage.fulfilled]: (state, action) => imagesAdapter.addOne(state, action.payload),
+  }
 });
 
-export const imageById = (state, imageId) => imagesAdapter.getSelectors().selectById(state, imageId)
+export const {
+  selectById: selectImageById
+} = imagesAdapter.getSelectors(state => state.images)
 
 export const addImage = imagesSlice.actions;
 export default imagesSlice.reducer;
