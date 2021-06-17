@@ -14,7 +14,9 @@ export const fetchJots = createAsyncThunk('jots/fetchJots', async () => {
 const jotsSlice = createSlice({
   name: 'jots',
   initialState,
-  reducers: {},
+  reducers: {
+    addManyJots: (state, action) => jotsAdaptor.upsertMany(state, action.payload)
+  },
   extraReducers: {
     [fetchJots.pending]: (state) => {
       state.status = 'loading'
@@ -29,5 +31,9 @@ const jotsSlice = createSlice({
     }
   }
 });
+
+export const {
+  selectById: selectJotById
+} = jotsAdaptor.getSelectors(state => state.jots)
 
 export default jotsSlice.reducer;

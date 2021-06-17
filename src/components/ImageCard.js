@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchImageById, selectImageById } from '../store/imagesSlice';
+import { JotCard } from './JotCard';
 
 export const ImageCard = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,11 @@ export const ImageCard = () => {
     content = (
       <>
         <img src={selectedImage.imageUrl} alt={selectedImage.imageUrl} />
+        {selectedImage.jots.map((jot) => {
+          return (
+            <JotCard jotId={jot.id} />
+          )
+        })}
       </>
         
     )

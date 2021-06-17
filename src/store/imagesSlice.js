@@ -26,9 +26,11 @@ export const fetchImageById = (imageId) => {
         let myObj = JSON.parse(respJson)
         const payload = {
           id: myObj.data.id,
-          imageUrl: myObj.data.links.image_url
+          imageUrl: myObj.data.links.image_url,
+          jots: myObj.data.attributes.jots.map(jot => jot.id)
         }
         dispatch({ type: 'images/fetchImageByIdSuccess', payload })
+        dispatch({ type: 'jots/addManyJots', payload: myObj.data.attributes.jots })
         console.log(myObj.data)
       }
     } catch (err) {
