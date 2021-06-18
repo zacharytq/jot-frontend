@@ -20,6 +20,7 @@ export const fetchImageById = (imageId) => {
   return async (dispatch) => {
     try {
       dispatch({ type: 'images/fetchImageByIdPending' })
+      dispatch({ type: 'jots/setStatusToWorking' })
       let response = await fetch(`http://127.0.0.1:3001/images/${imageId}`)
       if (response.ok) {
         let respJson = await response.text()
