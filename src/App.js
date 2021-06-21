@@ -1,6 +1,7 @@
 import React from 'react';
 import { UploadImage } from './components/UploadImage';
 import { Images } from './components/Images';
+import { JotsContainer } from './containers/JotsContainer'
 import Signup from './auth/Signup';
 import Login from './auth/Login';
 import { 
@@ -17,7 +18,8 @@ function App() {
           <Route exact path='/' render={() => <React.Fragment><UploadImage /></React.Fragment>} />
           <Route exact path='/signup' render={() => <><Signup /></>} />
           <Route exact path='/login' component={Login} />
-          <Route path='/images' render={() => <><Images /></>} />
+          <Route exact path='/images' render={() => <><Images /></>} />
+          <Route path='/jots' render={() => <><JotsContainer /></>} />
         </Switch>
       </div>
     </Router>

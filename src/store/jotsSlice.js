@@ -26,8 +26,12 @@ const jotsSlice = createSlice({
       state.status = 'loading'
     },
     [fetchJots.fulfilled]: (state, action) =>  {
-      state.status = 'succeeded';
-      jotsAdaptor.upsertMany(state, action.payload)
+      const payload = action.payload.data.map(jot => ({
+        id: jot.id,
+        title: jot.attributes.title
+      }))
+      jotsAdaptor.upsertMany(state, payload)
+      state.status = 'success';
     },
     [fetchJots.rejected]: (state, action) => {
       state.status = 'failed'
