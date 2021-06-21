@@ -1,3 +1,4 @@
+import { Card } from 'semantic-ui-react';
 export const JotCard = (props) => {
 
   return (
