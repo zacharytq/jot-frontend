@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAllJots, fetchJots } from '../store/jotsSlice';
 import { JotsList } from '../components/JotsList';
+import {Container} from 'semantic-ui-react';
 
 export const JotsContainer = () => {
   const jotStatus = useSelector(state => state.jots.status)
@@ -25,7 +26,9 @@ export const JotsContainer = () => {
 
   return (
     <div className='JotsContainer'>
+      <Container>
       {content}
+      </Container>
     </div>
   )
 }
