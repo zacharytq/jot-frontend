@@ -5,8 +5,7 @@ export const JotsList = (props) => {
   const content = props.jots.map(jot => (
     <JotCard
       key={jot.id}
-      title={jot.title}
-      location={jot.location} 
+      jot={jot}
     />
   ))
   return (
