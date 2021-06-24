@@ -5,6 +5,14 @@ const initialState = imagesAdapter.getInitialState({
   status: 'idle'
 })
 
+export const fetchImages = createAsyncThunk(
+  'images/fetchImages',
+  async () => {
+    const response = await fetch('http://127.0.0.1:3001/images').then(resp => resp.json())
+    return response
+  }
+)
+
 export const postNewImage = createAsyncThunk(
   'images/postNewImage',
   async initialImage => {
@@ -16,29 +24,13 @@ export const postNewImage = createAsyncThunk(
   }
 )
 
-export const fetchImageById = (imageId) => {
-  return async (dispatch) => {
-    try {
-      dispatch({ type: 'images/fetchImageByIdPending' })
-      dispatch({ type: 'jots/setStatusToWorking' })
-      let response = await fetch(`http://127.0.0.1:3001/images/${imageId}`)
-      if (response.ok) {
-        let respJson = await response.text()
-        let myObj = JSON.parse(respJson)
-        const payload = {
-          id: myObj.data.id,
-          imageUrl: myObj.data.links.image_url,
-          jots: myObj.data.attributes.jots.map(jot => jot.id)
-        }
-        dispatch({ type: 'images/fetchImageByIdSuccess', payload })
-        dispatch({ type: 'jots/addManyJots', payload: myObj.data.attributes.jots })
-        console.log(myObj.data)
-      }
-    } catch (err) {
-      console.error(err)
-    }
+export const fetchImageById = createAsyncThunk(
+  'images/fetchImagebyId',
+  async (imageId) => {
+    const response = await fetch(`http://127.0.0.1:3001/images/${imageId}`).then(resp => resp.json())
+    return response
   }
-}
+)
 
 //export const fetchImageById = createAsyncThunk(
 //  'images/fetchImageById',
@@ -56,12 +48,9 @@ const imagesSlice = createSlice({
     addImage: (state, action) => {
       state.images.push(action.payload)
     },
-    fetchImageByIdPending: (state) => {
-      state.status = 'loading'
-    },
-    fetchImageByIdSuccess: (state, action) => {
+    fetchImageById: (state, action) => {
       state.status = 'success'
-      imagesAdapter.upsertOne(state, action.payload)
+      imagesAdapter.upsertOne(state, action.payload.data.attributes)
     }
     //fetchImageById: (state, action) => {
     //  imagesAdapter.upsertOne(state, action.payload)
@@ -69,11 +58,17 @@ const imagesSlice = createSlice({
   },
   extraReducers: {
     [postNewImage.fulfilled]: (state, action) => imagesAdapter.addOne(state, action.payload),
+    [fetchImages.fulfilled]: (state, action) => {
+      state.status = 'success'
+      const loader = action.payload.data.map(i => i.attributes)
+      imagesAdapter.upsertMany(state, loader)
+    }
   }
 });
 
 export const {
-  selectById: selectImageById
+  selectById: selectImageById,
+  selectAll: selectAllImages
 } = imagesAdapter.getSelectors(state => state.images)
 
 export const addImage = imagesSlice.actions;

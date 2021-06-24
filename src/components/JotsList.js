@@ -2,12 +2,19 @@ import {Card} from 'semantic-ui-react';
 import { JotCard } from './JotCard';
 
 export const JotsList = (props) => {
-  const content = props.jots.map(jot => (
+
+  let content
+
+  if (props.jots) {
+    content = props.jots.map(jot => (
     <JotCard
       key={jot.id}
       jot={jot}
     />
   ))
+  } else {
+    content = <div></div>
+  }
   return (
     <Card.Group>
       {content}

@@ -1,37 +1,14 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchImageById, selectImageById } from '../store/imagesSlice';
-import { selectAllJots, selectJotsByImage } from '../store/jotsSlice'
-import { JotCard } from './JotCard';
+import { Card, Header, Image, List } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
-export const ImageCard = () => {
-  const dispatch = useDispatch();
-  const { imageId } = useParams()
-  const selectedImage = useSelector(state => selectImageById(state, imageId))
-  const status = useSelector(state => state.images.status)
-  const jotStatus = useSelector(state => state.jots.status)
-  const jots = useSelector(state => selectAllJots(state)).filter(jot => jot.image_id === 1)
-
-  useEffect(() => {
-      dispatch(fetchImageById(imageId))
-      
-  }, [dispatch, imageId])
-
-  let content
-
-  if (status === 'loading' || jotStatus === 'loading') {
-    content = <div>
-      <p>loading</p>
-      </div>
-  } else if (status === 'success' && jotStatus === 'success') {
-    content = jots.map(jot => (
-      <JotCard key={jot.id.toString()} title={jot.title} />
-    ))
-  }
+export const ImageCard = (props) => {
   return (
-    <div>
-      {content}
-    </div>
+    <Card as={Link} to={`/images/${props.imageObj.id}`}>
+      <Image src={props.imageObj.image_url} size='medium'/>
+      <Card.Content>
+        <Header as='h3'>Associated Jots</Header>
+        <List items={props.imageObj.jots.map(j => j.title)} />
+      </Card.Content> 
+    </Card>
   )
 }
