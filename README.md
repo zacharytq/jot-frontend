@@ -4,7 +4,7 @@ An app to take your handwritten notes and manage them on the cloud.
 
 ## Features
 
-  -[]
+Using the AWS Te
 
 ## Todo
 
